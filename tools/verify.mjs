@@ -7,7 +7,7 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 
 const file = process.argv[2] || 'index.html';
-const url = pathToFileURL(resolve(file)).href + '?qa=' + Date.now();
+const url = (/^https?:/.test(file) ? file : pathToFileURL(resolve(file)).href) + '?qa=' + Date.now();
 const port = +(process.env.PORT || 9340);
 let fails = 0, passes = 0;
 const check = (ok, msg) => { if (ok) { passes++; console.log('  ok   ' + msg); } else { fails++; console.log('  FAIL ' + msg); } };
