@@ -1,0 +1,1706 @@
+Absolutely. Paste this whole thing into Claude along with **`yard-city-scale.html`** and the immediately previous **`yard-form-material.html`**.
+
+````md
+# YARD / WORKING-TITLE CITY BUILDER — PROJECT HANDOFF
+
+## READ THIS FIRST
+
+You are inheriting a browser-based procedural city/building game prototype made primarily as a **single self-contained HTML/WebGL2 application**.
+
+The current working title is **YARD**, but the title is NOT settled. Trent may rebrand it. Do not entangle save formats, internal IDs, architecture names, or code structure with the YARD branding any more than necessary.
+
+Creator / author credit:
+
+**Trent Sterling (Tront)**  
+https://tront.xyz/
+
+The game has evolved very rapidly from a tiny procedural-building toy into:
+
+- a modern/brutalist architectural sculpting toy
+- a living diorama
+- a neighbourhood simulation
+- a light management/gameplay layer
+- and, most recently, a **multi-property city-scale editor**
+
+Two builds are being handed to you:
+
+1. **`yard-city-scale.html`**
+   - newest build
+   - experimental city-scale architecture
+   - 4×4 properties / blocks
+   - whole-city overview + detailed local property editing
+
+2. **`yard-form-material.html`**
+   - previous build
+   - use this as an important reference/baseline
+   - contains the architectural/material/selection overhaul inspired by a Miniopolis reference video
+   - generally represents the mature single-property experience before the city-scale restructuring
+
+Treat the newer build as the branch to continue, but use the previous build to catch regressions.
+
+---
+
+# PRIMARY PRODUCT VISION
+
+The best description of the target is:
+
+> **A modern architectural Townscaper-like city builder where large-scale city shaping transitions seamlessly into detailed buildings and tiny simulated lives.**
+
+The desired hierarchy is:
+
+**CITY SCALE**
+→ districts / roads / properties / skylines
+
+**BUILDING SCALE**
+→ procedural façades, setbacks, bridges, courtyards, terraces, materials, stair access
+
+**HUMAN SCALE**
+→ residents, workers, deliveries, cafés, gardens, movement, routes, furniture interactions
+
+The player should be able to zoom from:
+
+> “I made this district.”
+
+to:
+
+> “That person walked across my bridge, used those stairs, sat in that chair, and drank coffee.”
+
+That multi-scale relationship is one of the strongest unique directions the project discovered.
+
+---
+
+# DESIGN VALUES
+
+## 1. Sandbox freedom comes first
+
+Trent LOVES sandbox games.
+
+Do not turn this into a punitive city-management spreadsheet.
+
+Avoid immediately adding:
+
+- taxes
+- sewage
+- crime
+- police
+- fire departments
+- ten resources
+- complicated zoning percentages
+- rent micromanagement
+- offline-idle grind
+- arbitrary failure timers
+
+The project has gameplay now, but the architectural toy must remain enjoyable without objectives.
+
+---
+
+## 2. Architecture should have consequences
+
+The game became much better once construction affected simulation.
+
+A bridge should alter routes.
+
+A stair should genuinely connect floors.
+
+Removing a bridge should genuinely isolate destinations.
+
+A café should have capacity.
+
+Residents should actually use chairs.
+
+The visual architecture and simulation must tell the same truth.
+
+THIS IS IMPORTANT.
+
+We found multiple bugs where:
+
+- stairs visually faced one direction but navigation ignored them
+- residents effectively teleported through abstract routes
+- cafés were “visited” without people using furniture
+- routes technically existed but were visually unreadable
+- furniture and stairs could overlap
+
+Those kinds of visual/simulation mismatches are unacceptable.
+
+---
+
+## 3. Prefer visible problems over hidden stats
+
+Good gameplay:
+
+> “The café is visibly crowded.”
+
+Good gameplay:
+
+> “Everyone is using one stairwell.”
+
+Good gameplay:
+
+> “This garden lost access when I removed the bridge.”
+
+Bad gameplay:
+
+> “Efficiency rating -12%.”
+
+Whenever possible, the player should understand problems by looking at the city.
+
+Contextual overlays are allowed, but the world itself should communicate the state.
+
+---
+
+# ART DIRECTION
+
+## Core look
+
+Modern industrial / brutalist / office architecture.
+
+Reference qualities we targeted:
+
+- large concrete slabs
+- horizontal façade bands
+- recessed glazing
+- dark windows
+- strong silhouettes
+- setbacks
+- flat roofs
+- rooftop equipment
+- utilitarian stair cores
+- terraces
+- courtyards
+- bridges
+- light-industrial detailing
+
+The goal is **clean architectural readability**, not hyperrealism.
+
+---
+
+# CRITICAL REFERENCE VIDEO KNOWLEDGE
+
+Claude will NOT receive the original Miniopolis video, so preserve these observations.
+
+We broke the reference video into frames and extracted the following principles.
+
+## Around ~6.6 sec — footprint selection
+
+The reference selection did NOT look like individual highlighted voxel boxes.
+
+Instead:
+
+- one coherent orange/amber perimeter
+- subtle area fill
+- clean silhouette
+- clear cursor marker
+
+This inspired the current Area selection tool.
+
+---
+
+## Around ~7.2 sec — construction
+
+Selected volume turned into architectural mass immediately with satisfying animation.
+
+Important:
+
+- actual resulting geometry should animate
+- not merely an overlay
+- not fake boxes that get replaced afterward
+
+YARD has real generated-geometry placement animation.
+
+Preserve that.
+
+---
+
+## Around ~14 sec — building massing
+
+Reference architecture used:
+
+- broad concrete bands
+- stronger terminal/crown bands
+- recessed dark windows
+- much less arbitrary trim
+
+This caused a major YARD façade redesign.
+
+---
+
+## Around ~18 sec — vertical surface selection
+
+Reference visibly selected rectangular regions on building WALLS, not only roofs.
+
+YARD gained face-locked area selection.
+
+---
+
+## Around ~23 sec — glazing
+
+Reference glass varied between:
+
+- dark near-black
+- reflective gray
+- recessed interior appearance
+
+YARD glass was changed to:
+
+- inset geometry
+- stable pane variation
+- analytic sky/Fresnel
+- dark interior feel
+- optional reflection intensity
+
+IMPORTANT:
+
+There was once a fake animated glass “shine sweep” implemented with time.
+
+It looked terrible.
+
+It was removed.
+
+DO NOT reintroduce moving fake reflection bands.
+
+---
+
+## Around ~30 sec — complete buildings
+
+Reference roofs were relatively restrained.
+
+Less:
+
+- random visual noise
+- over-decoration
+- repeating arbitrary rooftop props
+
+More:
+
+- clean massing
+- readable roof equipment
+- silhouette
+
+YARD reduced automatic roof clutter as a result.
+
+---
+
+# ARCHITECTURAL MATERIAL FAMILIES
+
+Current conceptual types include approximately:
+
+## Precast / concrete
+
+Target:
+
+- broad concrete horizontal bands
+- recessed glazing ribbons
+- stronger terminal/crown sections
+- substantial industrial office architecture
+
+---
+
+## Curtain wall / glass
+
+Target:
+
+- dark recessed glazing
+- restrained framing
+- better depth than flat transparent rectangles
+
+---
+
+## Brickworks
+
+Target:
+
+- masonry piers
+- recessed industrial windows
+- sills / lintels
+- procedural brick/mortar character
+
+---
+
+## Service/core
+
+Target:
+
+- mostly solid
+- louvers
+- narrow windows
+- stair/elevator/service identity
+
+---
+
+# MATERIAL SHADING
+
+The game uses procedural/custom rendering rather than external asset packs.
+
+Concrete currently has procedural effects such as:
+
+- broad mottling
+- subtle aggregate
+- restrained runoff/grime
+- stable world-space variation
+
+Glass currently has:
+
+- dark interior look
+- Fresnel/view dependence
+- analytic sky reflection approximation
+- stable per-pane variation
+- optional blinds/light variation
+
+Do not claim it reflects nearby geometry unless you actually implement scene reflections.
+
+It currently does NOT use real raytraced/SSR building reflections.
+
+---
+
+# HERO ASSET POLISH HISTORY
+
+We deliberately stopped trying to polish the entire art set at once.
+
+Several high-frequency assets received dedicated procedural geometry passes.
+
+## Cars
+
+Cars evolved from crude colored boxes to stylized compact cars with:
+
+- circular tires
+- inset hubs
+- wheel arches
+- body shaping
+- windows
+- pillars
+- roof shell
+- lights
+- grille
+- bumpers
+- mirrors
+- door details
+
+IMPORTANT ART BUG HISTORY:
+
+An early upgraded car had a roof that looked like an oversized white padded lid.
+
+This was explicitly fixed by fitting the roof shell to the cabin geometry.
+
+Always inspect new procedural assets from several angles.
+
+---
+
+## Café terrace
+
+Received major polish:
+
+- round/slatted table
+- bentwood-style chairs
+- lattice/woven back
+- cushions
+- umbrella with ribs/panels
+- cups
+- saucers
+- café sign/menu board
+- planters
+
+IMPORTANT BUG HISTORY:
+
+The A-frame menu board originally had badly disconnected / warped panels.
+
+It was rebuilt into an actual hinged A-frame with consistent supports.
+
+---
+
+## Planters
+
+Upgraded from:
+
+> white box + green cubes
+
+to:
+
+- actual hollow planter
+- rim
+- soil
+- feet
+- panels
+- clustered plants
+- small leaves
+- restrained hanging ivy
+
+---
+
+## Trees
+
+Trees were heavily iterated.
+
+Early wind made foliage look like FLOATING SLIDING CUBES.
+
+Current philosophy:
+
+- trunk continues into canopy
+- visible branches
+- canopy lobes overlap/connect
+- foliage movement is rooted
+- branch + foliage displacement stays coherent
+- tree wind is gentle
+
+DO NOT make the canopy slide independently from the trunk.
+
+Wind should be root-relative.
+
+---
+
+## People / “duders”
+
+Original people were crude boxes.
+
+They were upgraded with:
+
+- better body silhouette
+- limbs
+- head
+- hair
+- clothing layers
+- pose variation
+- walking animation
+- distance-based stepping
+- smoother turning
+
+They are still stylized/simple.
+
+More improvement is welcome.
+
+---
+
+# CAFÉ INTERACTION SYSTEM
+
+This was an important milestone.
+
+Residents now do more than walk to a café destination.
+
+They can:
+
+1. reserve a real seat
+2. walk to its approach
+3. turn toward chair
+4. sit
+5. use a cup
+6. finish
+7. stand
+8. leave
+
+Multiple chairs can be occupied separately.
+
+The café model and simulation sockets should share layout data whenever possible.
+
+Avoid:
+
+> art says chair is here, nav guesses chair is somewhere else.
+
+---
+
+# ROUTING / ACCESS
+
+The access system became increasingly important.
+
+Conceptual graph includes:
+
+- outdoor ground
+- indoor floor space
+- roof walking surfaces
+- entrances
+- stairs
+- terrace stairs
+- bridges
+- activity destinations
+- furniture sockets
+- constrained passages
+
+---
+
+## Route rendering
+
+There was a regression where Trace Route technically worked but was essentially invisible.
+
+Current route visualization was redesigned into:
+
+- readable gold exterior trail
+- blue/contrasting interior/x-ray trail
+- arrows/direction
+- start/end visualization
+- stable screen-space-ish thickness
+- clear Trace / Hide state
+
+Do not make route overlays giant intrusive beams.
+
+Do not make them so faint that the feature appears broken.
+
+---
+
+# STAIRS
+
+Stairs caused several important bugs.
+
+Earlier:
+
+- stair geometry orientation did not match navigation
+- routes bypassed visible steps
+- doorway was too small for characters
+- furniture could block stairs
+- stairs could rotate unexpectedly
+
+Current improvements include:
+
+- route + visible stair orientation agree
+- explicit approach
+- visible steps/treads
+- door threshold
+- landing
+- clearance rules
+- furniture cannot occupy required stair space
+- auto orientation
+- user can cycle stair orientation
+- locked orientation does not silently change
+
+There is also a **Terrace stairs** connection type for different-height roofs.
+
+Preserve the principle:
+
+> visual stairs must be legitimately traversable by the simulation.
+
+---
+
+# GLASS REGRESSION HISTORY
+
+This deserves its own warning.
+
+At one point glass had:
+
+```glsl
+fract(world position - time)
+````
+
+style animated shimmer.
+
+It looked like lights/reflections sliding across windows even though nothing was moving.
+
+It was removed.
+
+Glass variation must remain STATIC unless something in the scene actually changes.
+
+---
+
+# UI / UX
+
+The first UI became a bloated prototype editor.
+
+It was substantially simplified.
+
+Current philosophy:
+
+## Main screen
+
+Only important controls should stay visible.
+
+Primary zones:
+
+* compact property/neighbourhood card
+* contextual bottom tool dock
+* small top utility controls
+* compact time controls
+
+Secondary features live in menus/drawers.
+
+---
+
+## Workspace tabs
+
+Conceptually:
+
+* Build
+* Live
+* Connect
+* Arrange
+
+Only show relevant tools for the current workspace.
+
+Avoid exposing every system simultaneously.
+
+---
+
+## Dark mode
+
+Dark UI became strongly preferred.
+
+Appearance should remain separate from world time-of-day.
+
+Dark mode does NOT mean nighttime.
+
+---
+
+# CAMERA
+
+Current game includes:
+
+## Orthographic
+
+Primary architectural / Townscaper-like mode.
+
+## Perspective
+
+True perspective, with perspective-correct picking.
+
+## Free camera
+
+Fly through city/property.
+
+Controls approximately:
+
+* WASD move
+* Q/E vertical
+* Shift faster
+* Ctrl precision/slower
+* mouse drag / mouse-look
+* wheel speed
+* Esc / F to return
+
+Free camera must NOT accidentally edit geometry.
+
+---
+
+# BUILDING CONTROLS
+
+Classic controls include:
+
+* Click Add
+* Erase
+* Recoat
+* Lift
+
+Materials mapped roughly to 1–4.
+
+Camera:
+
+* drag orbit
+* right/middle/modified drag pan
+* wheel zoom
+* F frame
+
+---
+
+# AREA EDITING
+
+This came from the Miniopolis video and is important.
+
+Player can edit rectangular regions instead of only individual bays.
+
+Concept:
+
+* choose Area mode OR Shift + drag
+* initial picked face locks the edit plane
+* drag rectangular selection
+* scroll adjusts depth/layers
+* release commits
+* Esc cancels
+* Alt drag can orbit
+* Alt click can sample material
+
+Works on:
+
+* ground
+* roofs
+* walls
+
+Modes:
+
+* Add
+* Erase
+* Recoat
+
+Selection style:
+
+* one coherent perimeter
+* subtle fill
+* dimensions/change count
+* not individual wireframe voxel cages
+
+Each area operation should undo as ONE operation.
+
+---
+
+# JUICE / PLACEMENT ANIMATION
+
+Trent requested this to be VERY juicy.
+
+However:
+
+* it must animate actual architecture
+* fast
+* satisfying
+* overshoot/squash/drop response
+* not slow cartoon growth
+
+Later reference/community feedback also suggested excessive wobble gets annoying.
+
+So:
+
+> punchy and brief > giant wobbling building
+
+There should ideally be an intensity setting.
+
+---
+
+# AUTHOR / BRANDING
+
+Current working branding:
+
+**YARD**
+by **Tront / Trent Sterling**
+[https://tront.xyz/](https://tront.xyz/)
+
+YARD MAY BE RENAMED.
+
+Do not assume the final product name is YARD.
+
+Important:
+
+Keep stable internal save-format IDs independent of public branding wherever possible.
+
+Existing save format historically used identifiers like:
+
+`yard-building`
+
+DO NOT casually rename those and invalidate saves.
+
+---
+
+# CREDITS / INSPIRATIONS
+
+Credits should clearly distinguish:
+
+## Author
+
+**Trent Sterling (Tront)**
+
+## Primary inspiration
+
+**Miniopolis**
+Luke Schneider / Radiangames
+
+Reference value:
+
+* modern procedural architecture
+* voxel/building rules
+* selection language
+* materials
+* city-scale scope
+
+## Foundational inspiration
+
+**Townscaper**
+Oskar Stålberg
+
+Reference value:
+
+* architecture emerging from simple edits
+* toy-like satisfaction
+* coherent forms
+
+## Additional design references
+
+**Tiny Glade**
+
+* adaptive architecture
+* pressure-free construction
+
+**Dystopika**
+
+* atmosphere
+* miniature cities
+* photography / lingering
+
+Do not imply these creators worked on YARD.
+
+---
+
+# NEIGHBOURHOOD GAMEPLAY
+
+The game stopped being only a building sandbox.
+
+A “Neighbourhood” layer was added.
+
+Basic idea:
+
+> One property can become a little community with homes, cafés, workshops, gardens, etc.
+
+Uses occupy space and create demand.
+
+Important principle:
+
+> Connectivity is the beginning, not the win condition.
+
+Examples:
+
+* café can be accessible but too small
+* shared entrance can become congested
+* workshop needs delivery access
+* residents want shared services
+* gardens affect routines
+* busy days stress the layout
+
+---
+
+# PROSPECTS / OCCUPANTS
+
+Neighbourhood edition introduced prospects such as:
+
+* households
+* cafés
+* repair workshop
+* studios
+* makerspace-type occupants
+
+Indoor space can be allocated/refit.
+
+This was intentionally chosen over a generic:
+
+> every cube earns money
+
+idle economy.
+
+---
+
+# BUSY DAYS / EVENTS
+
+Optional events test a layout.
+
+Examples used:
+
+* neighbourhood open day
+* makers’ market
+* rooftop evening
+
+Visitors come through actual routes.
+
+The system can expose bottlenecks such as:
+
+* café service
+* access
+* circulation
+* travel time
+
+The player can remodel and try again.
+
+This is intended to create GAMEPLAY without making construction stressful.
+
+---
+
+# CITY SCALE — CURRENT NEWEST SYSTEM
+
+The newest build expands the old single property into a city.
+
+Current experimental structure:
+
+## 4 × 4 city properties
+
+Each property is approximately the size of the old 12×12 detailed plot.
+
+Combined footprint:
+
+**48 × 48 building bays**
+
+Vertical currently approximately:
+
+**16 levels**
+
+So total potential conceptual city occupancy is much larger than the original prototype.
+
+---
+
+## City overview
+
+On startup / overview:
+
+* see whole city
+* roads connect properties
+* surrounding blocks exist around current property
+* choose a property
+* dive into it
+
+Shortcut:
+
+**M** toggles city/property context.
+
+---
+
+## Active property
+
+One property is simulated/rendered in full detail:
+
+* architectural procedural generation
+* residents
+* cafés
+* neighbourhood mechanics
+* stair access
+* route tracing
+* building editing
+* detailed props
+
+---
+
+## Surrounding properties
+
+Other blocks use a cheaper architectural LOD/cache.
+
+DO NOT simulate:
+
+* café chairs
+* exact stair footsteps
+* full furniture nav
+* all resident interactions
+
+for every distant city block.
+
+That defeats the architecture.
+
+---
+
+# CITY-SCALE FUTURE TARGET
+
+Current 4×4 is the first step.
+
+Longer-term target discussed:
+
+## Normal map
+
+**64 × 32 × 64**
+
+## Large / stress target
+
+Approximately:
+
+**128 × 64 × 128**
+
+That is ~1,048,576 voxel slots.
+
+Miniopolis publicly discussed roughly:
+
+126 × 63 × 126 theoretical max.
+
+Do NOT simply increase the old global array and regenerate everything.
+
+---
+
+# CITY ARCHITECTURE DIRECTION
+
+The correct scalable hierarchy is roughly:
+
+```text
+CityWorld
+├── City / district graph
+├── Roads
+├── Properties / parcels
+├── Buildings
+├── Chunks
+└── Simulation regions
+
+Property / Building
+├── Occupancy
+├── Materials
+├── Entrances
+├── Local floor graph
+├── Occupants
+├── Uses
+└── Local high-detail nav
+```
+
+---
+
+# CHUNKING
+
+Eventually city geometry should be partitioned.
+
+Potential chunk sizes to profile:
+
+* 8×8×8
+* comparable regional sizes
+* per-building / hybrid boundaries
+
+Edit:
+
+```text
+change cells
+↓
+mark chunk dirty
+↓
+mark boundary neighbors if necessary
+↓
+rebuild only affected geometry
+↓
+replace GPU buffer
+```
+
+Do NOT regenerate a million-cell city for every normal click unless profiling somehow proves it is genuinely trivial.
+
+---
+
+# MACRO GEOMETRY
+
+For city scale, procedural geometry should eventually detect larger runs.
+
+Instead of creating:
+
+```text
+window
+window
+window
+window
+```
+
+recognize:
+
+```text
+continuous facade run
+```
+
+and generate optimized architectural strips.
+
+Good candidates:
+
+* horizontal concrete bands
+* curtain-wall runs
+* parapets
+* repeated mullions
+* roof slabs
+* road segments
+
+This improves BOTH:
+
+* visual coherence
+* performance
+
+---
+
+# SIMULATION LOD
+
+Critical future architecture.
+
+Do not run full café-chair/stair simulation for thousands of inhabitants.
+
+Conceptual LOD:
+
+## Far / offscreen
+
+Statistical:
+
+> Home → Work
+> ETA etc.
+
+No body mesh.
+
+## Visible city district
+
+Cheap agents:
+
+* position
+* destination
+* simplified route
+
+## Nearby property
+
+Full existing simulation:
+
+* exact stairs
+* door queues
+* furniture clearance
+* café seating
+* cup interaction
+
+## Selected citizen
+
+Maximum fidelity:
+
+* detailed route
+* camera follow
+* rich status
+* interaction state
+
+---
+
+# HIERARCHICAL NAVIGATION
+
+Long-distance route should be approximately:
+
+```text
+local indoor space
+↓
+building entrance
+↓
+city road / district graph
+↓
+destination entrance
+↓
+local building graph
+↓
+chair / workstation / garden
+```
+
+Do not build one gargantuan chair-level navigation graph for the entire city.
+
+---
+
+# ROADS / CITY FORM
+
+Future city should support more than a rigid SimCity rectangle eventually.
+
+Desired possibilities:
+
+* roads
+* parcels
+* merged parcels
+* courtyards
+* alleys
+* plazas
+* pedestrian areas
+* bridges between properties
+
+BUT:
+
+Do not immediately build a traffic simulator.
+
+Roads first serve:
+
+* visual city structure
+* access
+* movement hierarchy
+* property boundaries
+
+---
+
+# CITY SCALE DIFFERENTIATOR
+
+The project’s strongest eventual differentiator is:
+
+> **You can build the whole city, then zoom into one block and watch a tiny resident climb the stairs and sit down for coffee.**
+
+Protect this identity.
+
+---
+
+# PERFORMANCE PHILOSOPHY
+
+Trent values performance and is technically experienced.
+
+He will notice dumb architecture.
+
+Prioritize:
+
+* cached generated meshes
+* localized dirty rebuilds
+* buffer reuse
+* no unnecessary allocations every frame
+* simulation LOD
+* spatial partitioning
+* deterministic procedural variation
+
+Do not prematurely introduce complex tech just because it sounds impressive.
+
+Profile first.
+
+---
+
+# TECHNICAL RENDERER NOTES
+
+The project has primarily used a **self-contained WebGL2 renderer**.
+
+There has also been an optional Three.js adapter in some builds.
+
+Historically:
+
+* WebGL2 path received actual automated/render testing
+* Three.js/network-dependent adapter was less consistently verified
+
+DO NOT assume Three.js path works merely because the title of the project says Three.js.
+
+Test the exact delivered path.
+
+---
+
+# SINGLE-FILE REQUIREMENT
+
+The project has repeatedly targeted a:
+
+> single static `.html`
+
+that Trent can host on tront.xyz.
+
+Preserve that workflow unless there is a compelling reason to introduce a build pipeline.
+
+You can internally split code while developing if needed, but delivery should remain straightforward.
+
+---
+
+# ABSOLUTE QA RULE
+
+THIS IS THE MOST IMPORTANT PROCESS LESSON FROM THIS PROJECT.
+
+## NEVER SHIP A BUILD WITHOUT RUNNING IT.
+
+Several bad regressions occurred during development because work was:
+
+* syntax checked
+* reasoned about
+* claimed as complete
+
+without actually running the exact delivered HTML.
+
+Bugs caught this way included:
+
+* `applyPreset is not defined`
+* blank renderer
+* `hex.replace is not a function`
+* broken startup
+* missing hero assets after packaging
+* route tracer that technically existed but was visually invisible
+* cars snapping/driving sideways
+* tree leaves floating away from trunks
+* café sign geometry visibly broken
+* car roof geometry visibly absurd
+
+Therefore:
+
+# Every substantial change must include:
+
+1. open EXACT final HTML in Chromium
+2. verify first rendered frame
+3. check console
+4. check WebGL errors
+5. perform representative player actions
+6. visually inspect screenshots
+7. preferably inspect multiple camera angles
+8. test desktop and mobile if UI changed
+9. only THEN say it is done
+
+A unit test is not a visual inspection.
+
+A syntax check is not a playtest.
+
+A mesh existing is not proof it looks good.
+
+---
+
+# VISUAL INSPECTION RULE
+
+When Trent asks for an art improvement, ALWAYS SHOW:
+
+## BEFORE
+
+real capture from old in-engine build
+
+## AFTER
+
+real capture from new in-engine build
+
+Use:
+
+* same camera
+* same scale
+* same lighting when possible
+
+Do NOT show a generated concept image and imply it represents implemented geometry.
+
+This mistake happened once and destroyed trust immediately.
+
+Concept art can be used if explicitly labelled:
+
+> TARGET / CONCEPT
+
+Never:
+
+> AFTER
+
+unless it is actually rendered from the implemented game.
+
+---
+
+# PLAYTESTING RULE
+
+Do not merely test buttons individually.
+
+Actually run meaningful loops.
+
+Examples already used:
+
+```text
+place bridge
+trace route
+send resident
+watch them climb stairs
+watch them use café
+delete bridge
+verify access breaks
+undo
+verify route recovers
+```
+
+City-scale future tests should include:
+
+```text
+edit property A
+switch to city
+edit property B
+return to A
+verify exact persistence
+save city
+reload city
+verify both properties
+```
+
+And later:
+
+```text
+resident travels between properties
+zoom away
+simulation LOD switches
+return nearby
+state reconstructs correctly
+```
+
+---
+
+# KNOWN UX PREFERENCES FROM TRENT
+
+Trent strongly prefers:
+
+* visible text labels on buttons
+* normal readable font sizes
+* not icon-only mystery meat
+* minimal always-visible explanatory text
+* immediate response
+* simple controls
+* clean UI
+* contextual tools
+* strong visual hierarchy
+
+Avoid:
+
+* giant tutorial panels
+* dense editor dashboards
+* everything visible simultaneously
+* hidden-hover-only meaning
+* AI-template aesthetic
+
+---
+
+# CURRENT OPEN DESIGN QUESTIONS
+
+## Branding
+
+YARD is temporary.
+
+Potential rebrand has NOT been decided.
+
+Do not waste major implementation time on branding until Trent chooses a name.
+
+---
+
+## City size
+
+Current city-scale build proves multiple blocks.
+
+Next logical technical milestone is probably to make the city architecture more scalable before adding lots of gameplay systems.
+
+Suggested progression:
+
+```text
+current 48×48 footprint
+↓
+64×64
+↓
+profile
+↓
+96×96
+↓
+128×128 stress target
+```
+
+Do not jump blindly.
+
+---
+
+## Gameplay density at city scale
+
+Need to decide how much local neighbourhood simulation should propagate city-wide.
+
+Likely answer:
+
+* full gameplay only near player
+* statistical city simulation farther away
+
+---
+
+# THINGS THAT ARE GOOD RIGHT NOW — DO NOT CASUALLY REGRESS
+
+* dark UI
+* orthographic editing
+* perspective mode
+* free camera
+* actual generated-geometry build bounce
+* rectangular area editing
+* static believable glass
+* more restrained architectural façades
+* concrete material variation
+* refined compact cars
+* refined café furniture
+* refined planters
+* rooted trees
+* improved people
+* readable route trace
+* actual stair traversal
+* terrace stairs
+* café seating interaction
+* access graph
+* undo/redo
+* portable JSON
+* neighbourhood prospects
+* busy-day testing
+* city overview / property dive
+
+---
+
+# THINGS STILL WORTH IMPROVING
+
+## Architecture
+
+Still needs:
+
+* more façade variants
+* stronger corners
+* more building identities
+* better tall-building silhouettes
+* podium/tower transitions
+* deeper roof vocabulary
+* better industrial equipment
+* mesh variants
+
+Miniopolis author publicly mentioned a mesh variant system as unfinished in their own project; variation is clearly a useful direction.
+
+---
+
+## People
+
+Still need:
+
+* additional body/clothing silhouettes
+* more idle actions
+* stronger stair animation
+* more use-specific actions
+* far-agent LOD
+
+---
+
+## City
+
+Still needs:
+
+* proper chunk architecture
+* improved roads
+* districts
+* parcel editing
+* cross-property paths
+* long-distance simulation LOD
+* city overview polish
+* macro façade generation
+
+---
+
+## Gameplay
+
+Still needs:
+
+* more meaningful occupants
+* persistent relationships between properties
+* more opportunities emerging from what was built
+* events that produce architectural tradeoffs
+* city-level demand/catchment behavior
+
+Keep gameplay visible and spatial.
+
+---
+
+# IMPORTANT CLEAN-ROOM / INSPIRATION NOTE
+
+Miniopolis and Townscaper are inspirations.
+
+Do NOT use or reconstruct:
+
+* proprietary source
+* private rule tables
+* copyrighted asset meshes
+* extracted game assets
+
+Our building geometry and logic must remain independent.
+
+Publicly described Miniopolis approach:
+
+* custom rules
+* neighbour-aware voxels
+* building/height metadata
+* no WFC
+* later detail pass
+
+That is broad architectural knowledge, not code to copy.
+
+---
+
+# CLAUDE WORKING STYLE REQUEST
+
+Trent moves FAST.
+
+He likes large useful passes.
+
+Do not respond to:
+
+> “make it happen”
+
+with a three-page theoretical proposal and no implementation.
+
+When asked to build:
+
+1. inspect current source
+2. make a plan internally
+3. implement
+4. run it
+5. playtest it
+6. visually inspect it
+7. fix regressions
+8. attach the working HTML
+9. summarize what changed
+
+If you find a bug during QA:
+
+FIX IT.
+
+Do not knowingly hand Trent a broken candidate unless explicitly labelled experimental.
+
+---
+
+# FILE HANDOFF PRIORITY
+
+When comparing the two supplied builds:
+
+## `yard-city-scale.html`
+
+Use this as:
+
+> current HEAD / city expansion
+
+## `yard-form-material.html`
+
+Use this as:
+
+> mature visual + editing baseline before city restructuring
+
+If the city build lost a feature that exists in Form & Material, treat that as a probable regression unless the removal was intentional.
+
+---
+
+# NEXT RECOMMENDED DEVELOPMENT PASS
+
+My recommendation for the next owner of this project:
+
+## CITY FOUNDATION PASS
+
+Do NOT immediately add 30 new gameplay features.
+
+Focus first on making the 4×4 city architecture solid.
+
+Suggested tasks:
+
+### 1. Formalize CityWorld
+
+Separate:
+
+* city state
+* property state
+* active detailed property
+* cached inactive blocks
+
+### 2. Dirty property/chunk rebuilding
+
+Stop treating every city update as global.
+
+### 3. Cross-property persistence tests
+
+Aggressively test:
+
+* edit A
+* edit B
+* return A
+* undo behavior
+* save
+* reload
+
+### 4. City camera UX
+
+Smooth:
+
+* overview → property zoom
+* property → overview
+* selected property highlighting
+
+### 5. City roads
+
+Make city roads and sidewalks feel authored rather than like separators between copies of the old plot.
+
+### 6. City visual LOD
+
+Far blocks:
+
+* simplify small trim
+* retain silhouette/material
+* keep distinctive roofs
+* no tiny furniture
+
+### 7. Begin cross-property access
+
+Only after city state is stable.
+
+---
+
+# NORTH STAR
+
+The game should eventually let someone say:
+
+> “I built that whole district.”
+
+Then zoom in and say:
+
+> “That’s Ada. She lives over there, walks across the bridge I built, climbs those stairs, and grabs coffee downstairs before work.”
+
+If a proposed feature strengthens that fantasy, it probably belongs.
+
+If it turns the project into a generic spreadsheet city builder, rethink it.
+
+---
+
+# FINAL REMINDER
+
+Trent will absolutely notice:
+
+* floating geometry
+* mismatched stairs
+* bad proportions
+* routes clipping walls
+* broken camera controls
+* ugly temporary models
+* jittering animations
+* fake reflections
+* inconsistent visual language
+* regressions from a previous build
+
+He will also appreciate aggressive improvements when they genuinely work.
+
+**RUN THE DAMN HTML BEFORE YOU HAND IT BACK.**
+
+```
+
+That should give Claude basically the entire tribal history without needing the original video, including the mistakes that are worth **not repeating**.
+```
