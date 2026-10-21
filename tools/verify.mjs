@@ -5,6 +5,8 @@
 import {launch, sleep, until} from './cdp.mjs';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {mkdirSync} from 'node:fs';
+mkdirSync('tools/out', {recursive: true}); // fresh clones have no tools/out; screenshots would ENOENT
 
 const file = process.argv[2] || 'index.html';
 const url = (/^https?:/.test(file) ? file : pathToFileURL(resolve(file)).href) + '?qa=' + Date.now();
